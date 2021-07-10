@@ -7,7 +7,7 @@
 
       <Cardfriends :friends="friends" />
 
-    <table class="table">
+    <!-- <table class="table">
   <thead>
     <tr>
       <th scope="col">Nama</th>
@@ -27,7 +27,7 @@
       </td>
     </tr>
   </tbody>
-</table>
+</table> -->
   </div>
 </template>
 

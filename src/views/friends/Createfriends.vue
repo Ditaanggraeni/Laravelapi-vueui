@@ -19,13 +19,21 @@
         {{ validation.no_tlp[0] }}
       </div>
   </div>
-  <div class="col-12">
+  <div class="col-6">
     <label for="inputAddress" class="form-label">Alamat</label>
     <input type="text" class="form-control" id="inputAddress" placeholder="Masukkan Alamat"
     v-model="friend.alamat" />
     <div class="alert alert-danger" v-if="validation.alamat">
         {{ validation.alamat[0] }}
       </div>
+  </div>
+  <div class="col-6">
+    <label for="inputAddress" class="form-label">Group</label>
+    <select class="form-select" aria-label="Default select example" v-model="friend.groups_id">
+        <option v-for="group in groups" :key="group.id" :value="group.id">
+          {{ group.name }}
+          </option>
+    </select>
   </div>
   
   <div class="col-12">
@@ -38,31 +46,49 @@
 </template>
 <script>
 import { ref } from 'vue';
-import { reactive } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+//import { response } from 'express';
 export default {
   setup() {
 
     const friend = reactive({
       nama: '',
       no_tlp: '',
-      alamat: ''
-    })
+      alamat: '',
+      groups_id: ''
+    });
 
-    const validation = ref([])
+    let groups = ref([]);
+    const validation = ref([]);
 
-    const router = useRouter()
+    const router = useRouter();
+
+    onMounted(() =>{
+
+      axios.get('http://127.0.0.1:8000/api/groups')
+      .then((response) => {
+        groups.value = response.data.data;
+        console.log(response);
+      })
+      .catch((error) => {
+        validation.value = error.response.data;
+        console.log(error);
+      });
+});
 
     function store(){
-      let nama = friend.nama
-      let no_tlp = friend.no_tlp
-      let alamat = friend.alamat
+      let nama = friend.nama;
+      let no_tlp = friend.no_tlp;
+      let alamat = friend.alamat;
+      let groups_id = friend.groups_id;
 
       axios.post('http://127.0.0.1:8000/api/friends', {
         nama: nama,
         no_tlp: no_tlp,
-        alamat: alamat
+        alamat: alamat,
+        groups_id: groups_id
       }).then(() => {
         router.push({
           name:'Home'
@@ -75,7 +101,8 @@ export default {
       friend,
       validation,
       router, 
-      store
+      store,
+      groups
     }
   },
 }
